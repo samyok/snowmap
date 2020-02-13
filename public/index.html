@@ -42,7 +42,7 @@
         $.get("https://s3.amazonaws.com/grayfilestore-ksfy/closingsData/closings_KSFY.json", data => {
             data[0].record.forEach(record => {
                 if (record.forced_category_name === "Schools") {
-                    $.get(`/map_location?search=${record.forced_organization_name}`, (searchData, status) => {
+                    $.get(`/map_location?search=${record.forced_organization_name}, ${record.stateName}`, (searchData, status) => {
                         console.log(searchData);
                         new google.maps.Marker({
                             position: searchData.candidates[0].geometry.location,
