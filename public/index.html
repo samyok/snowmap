@@ -1,0 +1,63 @@
+<html>
+<head>
+    <title>LocateSnow</title>
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+ * element that contains the map. */
+        #map {
+            height: 100%;
+        }
+
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
+          integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+<div id="map"></div>
+<!-- Replace the value of the key parameter with your own API key. -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDRvI-prQUfvq-J1UkILWYnIS2ssTh3Ze4&callback=initMap&libraries=places" async
+        defer></script>
+<!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDRvI-prQUfvq-J1UkILWYnIS2ssTh3Ze4&libraries=places" async-->
+<!--        defer></script>-->
+<script>
+    var map;
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {
+                lat: 44.3114,
+                lng: -96.7984
+            },
+            zoom: 10
+        });
+        var service = new google.maps.places.PlacesService(map);
+
+        $.get("https://s3.amazonaws.com/grayfilestore-ksfy/closingsData/closings_KSFY.json", data => {
+            data[0].record.forEach(record => {
+                if (record.forced_category_name === "Schools") {
+                    $.get(`/map_location?search=${record.forced_organization_name}`, (searchData, status) => {
+                        console.log(searchData);
+                        new google.maps.Marker({
+                            position: searchData.candidates[0].geometry.location,
+                            map: map,
+                            label: record.forced_status_name
+                        });
+
+                    })
+                }
+            })
+        })
+    }
+
+
+
+</script>
+</body>
+</html>
